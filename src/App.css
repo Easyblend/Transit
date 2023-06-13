@@ -36,3 +36,28 @@
     transform: rotate(360deg);
   }
 }
+
+/*Removing Border from navbar buttons*/
+button.navbar-toggler:focus,
+.navbar-toggler:active {
+  box-shadow: none;
+}
+/*Main container*/
+.main-container {
+  min-height: 100vh;
+  position: relative;
+}
+
+.zindex-5 {
+  z-index: 1000843987;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+@media screen and (max-width: 480px) {
+  .zindex-5 {
+    width: 80%;
+  }
+}

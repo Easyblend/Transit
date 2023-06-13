@@ -2,13 +2,11 @@ import React from "react";
 import { Form } from "react-bootstrap";
 import { useRef } from "react";
 import { Button } from "react-bootstrap";
-// import {
-//   sendPasswordResetEmail,
-//   signInWithEmailAndPassword,
-// } from "firebase/auth";
-// import { authentication } from "./FirebaseConfig";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+
+import { Link, useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../Confitg/DatabaseConfig";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const email = useRef(null);
@@ -16,8 +14,37 @@ const Login = () => {
 
   const navigate = useNavigate();
 
+  const submitLogin = (e) => {
+    e.preventDefault();
+
+    const id = toast.loading("Signing you up..");
+
+    signInWithEmailAndPassword(
+      auth,
+      email.current.value,
+      password.current.value
+    )
+      .then((credential) => {
+        toast.update(id, {
+          render: `Welcome ${credential.user.displayName}`,
+          type: "success",
+          isLoading: false,
+          autoClose: true,
+        });
+        return navigate("/");
+      })
+      .catch((error) => {
+        toast.update(id, {
+          render: error.code,
+          type: "error",
+          isLoading: false,
+          autoClose: true,
+        });
+      });
+  };
+
   return (
-    <div className="row mx-auto bg-light vh-100 text-dark">
+    <div className="row mx-auto  bg-light vh-100 text-dark">
       <div
         className="col-6 shadow-sm d-none d-sm-flex px-0 vh-100 justify-content-start align-items-start py-5 text-light"
         style={{
@@ -35,8 +62,11 @@ const Login = () => {
           <h1 className="text-light text-center">Transit</h1>
         </div>
       </div>
-      <div className="col-sm-5 my-auto col-12 mx-auto">
-        <Form className="w-75 mx-auto mt-5 d-flex flex-column gap-4">
+      <div className="col-sm-5 my-auto mx-auto col-12 ">
+        <Form
+          className="  mt-5 d-flex flex-column gap-4"
+          onSubmit={submitLogin}
+        >
           <div>
             <h2>Welcome Back!</h2>
             <p className="text-muted">Sign in if you already have an account</p>
@@ -61,13 +91,16 @@ const Login = () => {
             />
             <p className="mt-3 d-flex text-muted">Forogtten passowrd?</p>
           </Form.Group>
-          <Button type="submit" className="mt-3 py-3">
+          <Button type="submit" className=" py-3">
             Log In
           </Button>
         </Form>
-        <div className="text-center mt-3 text-muted">
+        <Link
+          to="/register"
+          className="text-center mt-3 text-muted text-decoration-none"
+        >
           Dont have an account? <span className="text-primary">Sign up</span>
-        </div>
+        </Link>
       </div>
     </div>
   );
