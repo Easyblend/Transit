@@ -4,12 +4,15 @@ import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
 import L from "leaflet";
 import { createControlComponent } from "@react-leaflet/core";
 import "leaflet-routing-machine";
+import { toast } from "react-toastify";
 
 const BookRidePage = () => {
   const [location, setLocation] = useState("Unknown");
   const [geolocation, setGeolocation] = useState(null);
 
   const [destination, setDestination] = useState(null);
+
+  const [formState, setFormState] = useState(1);
 
   const destinationCities = [
     "Accra",
@@ -18,6 +21,16 @@ const BookRidePage = () => {
     "Cape-Coast",
     "Takoradi",
   ];
+
+  const takeOffTime = [
+    "4:00am",
+    "6:00am",
+    "9:00am",
+    "12:00pm",
+    "3:00pm",
+    "6:00pm",
+  ];
+  const [time, setTime] = useState("4:00pm");
 
   function getLocation() {
     if (navigator.geolocation) {
@@ -43,15 +56,14 @@ const BookRidePage = () => {
       const apiKey = process.env.REACT_APP_GEOLOCAT_API;
       const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${geolocation.lat}&lon=${geolocation.lon}&appid=${apiKey}`;
 
-      // fetch(apiUrl)
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     console.log("Location:", data);
-      //     setLocation(data.name);
-      //   })
-      //   .catch((error) => {
-      //     console.error(error);
-      //   });
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          setLocation(data.name);
+        })
+        .catch((err) => {
+          toast.warning("something went wrong");
+        });
     }
   }, [geolocation]);
 
@@ -75,8 +87,20 @@ const BookRidePage = () => {
 
     return instance;
   };
-  console.log(destination);
+
   const RoutingMachine = createControlComponent(createRoutineMachineLayer);
+
+  const rideRequest = (e) => {
+    e.preventDefault();
+    if (formState == 1) {
+      setFormState(formState + 1);
+    } else {
+      //send data to database
+
+      setFormState(0);
+      toast.success("Ride successfully Booked!");
+    }
+  };
 
   return geolocation ? (
     <>
@@ -125,55 +149,125 @@ const BookRidePage = () => {
         </Marker>
       </MapContainer>
       <div className="zindex-5 bg-dark text-light opacity-100 px-5 py-4 mb-3 rounded-4">
-        <Form className=" mx-auto d-flex flex-column gap-3">
+        <Form
+          className=" mx-auto d-flex flex-column gap-3"
+          onSubmit={rideRequest}
+        >
           <div>
-            <h3>Book a Ride!</h3>
-            <p className="text-light">Select your Destination point</p>
+            {formState == 0 ? (
+              <>
+                <h3 className="text-primary text-center">
+                  Ride successfully booked
+                </h3>{" "}
+                <p className="text-light">
+                  Be at the {location} transit station at{" "}
+                  <span className="text-warning">{time}</span>
+                </p>
+              </>
+            ) : (
+              <>
+                <h3>Book a Ride!</h3>
+                <p className="text-light">Select your Destination point</p>
+              </>
+            )}
           </div>
-          <Form.Group className="my-0 py-0 g-0">
-            <Form.Control
-              type="text"
-              placeholder="your location"
-              required
-              disabled
-              className="py-2"
-              value={location}
-            />
-          </Form.Group>
+          {formState == 1 ? (
+            <>
+              <Form.Group className="my-0 py-0 g-0">
+                <Form.Control
+                  type="text"
+                  placeholder="your location"
+                  required
+                  className="py-2"
+                  value={location}
+                />
+              </Form.Group>
 
-          {/* <Form.Control
+              {/* <Form.Control
               type="text"
               placeholder="To"
               required
               className="py-2"
             /> */}
-          <h4 className="text-center my-0 py-0 g-0">To</h4>
+              <h4 className="text-center my-0 py-0 g-0">To</h4>
 
-          <Form.Group className="my-0 py-0 g-0">
-            <select
-              className="form-select"
-              aria-label="Default select example"
-              defaultValue="Choose Route"
-              onChange={(e) => setDestination(e.target.value)}
-            >
-              <option disabled>Choose Route</option>
-              {destinationCities.map((destination) => {
-                return destination !== location ? (
-                  <option key={destination} value={destination}>
-                    {destination}
-                  </option>
-                ) : null;
-              })}
-            </select>
-          </Form.Group>
-          <Button type="submit" className="mt-3">
-            Book a seat
-          </Button>
+              <Form.Group className="my-0 py-0 g-0">
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  defaultValue="Choose Route"
+                  onChange={(e) => setDestination(e.target.value)}
+                >
+                  <option disabled>Choose Route</option>
+                  {destinationCities.map((destination) => {
+                    return destination !== location ? (
+                      <option key={destination} value={destination}>
+                        {destination}
+                      </option>
+                    ) : null;
+                  })}
+                </select>
+              </Form.Group>
+              <Button type="submit" className="mt-3">
+                Next
+              </Button>
+            </>
+          ) : formState == 2 ? (
+            <>
+              <Form.Group className="my-0 py-0 g-0">
+                <Form.Control
+                  type="text"
+                  placeholder="Bus type e.g VIP Transit"
+                  required
+                  className="py-2"
+                />
+              </Form.Group>
+
+              <Form.Control
+                type="number"
+                placeholder="seat Number"
+                required
+                max={24}
+                min={1}
+                className="py-2"
+              />
+              <p className="text-center my-0 py-0">
+                <span className="text-danger">24 </span>seats Available
+              </p>
+
+              <Form.Group className="my-0 py-0 g-0">
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  defaultValue="Expected take off time"
+                  d
+                  onChange={(e) => setTime(e.target.value)}
+                >
+                  <option disabled>Expected take off time</option>
+                  {takeOffTime.map((time) => {
+                    return (
+                      <option key={time} value={time}>
+                        Today {time}
+                      </option>
+                    );
+                  })}
+                </select>
+              </Form.Group>
+              <Button type="submit" className="mt-3">
+                Book a seat
+              </Button>
+            </>
+          ) : (
+            ""
+          )}
         </Form>
       </div>
     </>
   ) : (
-    <h1>Error</h1>
+    <div class="lds-ripple">
+      <div></div>
+      <div></div>
+    </div>
   );
 };
 
