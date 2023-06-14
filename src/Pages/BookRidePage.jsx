@@ -65,9 +65,9 @@ const BookRidePage = () => {
       lineOptions: {
         styles: [
           {
-            color: "blue",
-            opacity: 1,
-            weight: 6,
+            color: " blue",
+            opacity: 0.8,
+            weight: 4,
           },
         ],
       },
@@ -137,7 +137,7 @@ const BookRidePage = () => {
               required
               disabled
               className="py-2"
-              value={location || ""}
+              value={location}
             />
           </Form.Group>
 
@@ -167,7 +167,7 @@ const BookRidePage = () => {
             </select>
           </Form.Group>
           <Button type="submit" className="mt-3">
-            Book a seat GHC 390
+            Book a seat
           </Button>
         </Form>
       </div>
