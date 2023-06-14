@@ -1,8 +1,40 @@
 import { Button, Form } from "react-bootstrap";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
 
 const BookRidePage = () => {
+  const [location, setLocation] = useState("unknown");
+
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(getWeather);
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+    }
+  }
+
+  function getWeather(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    const apiKey = process.env.REACT_APP_GEOLOCAT_API;
+    const apiUrl = `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=2&appid=${apiKey}`;
+
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Location:", data[0].name);
+        setLocation(data[0].name);
+      })
+      .catch((error) => {
+        console.error("Error fetching weather data:", error);
+      });
+  }
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
   return (
     <>
       <MapContainer
@@ -21,18 +53,19 @@ const BookRidePage = () => {
           </Popup>
         </Marker>
       </MapContainer>
-      <div className="zindex-5 bg-secondary opacity-100 px-5 py-4 mb-3 rounded-4">
+      <div className="zindex-5 bg-dark text-light opacity-100 px-5 py-4 mb-3 rounded-4">
         <Form className=" mx-auto d-flex flex-column gap-3">
           <div>
             <h3>Book a Ride!</h3>
-            <p className="text-muted">Select your closest pickup point</p>
+            <p className="text-light">Select your closest pickup point</p>
           </div>
           <Form.Group>
             <Form.Control
               type="text"
-              placeholder="From"
+              placeholder="your location"
               required
               className="py-2"
+              value={location || ""}
             />
           </Form.Group>
           <Form.Group>
