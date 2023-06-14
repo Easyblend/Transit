@@ -1,9 +1,10 @@
 import { addDoc, collection } from "firebase/firestore";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { db } from "../Confitg/DatabaseConfig";
+import { Link, useNavigate } from "react-router-dom";
+import { auth, db } from "../Confitg/DatabaseConfig";
 import { toast } from "react-toastify";
+import { onAuthStateChanged } from "firebase/auth";
 
 const BecomeRider = () => {
   const name = useRef(null);
@@ -17,6 +18,21 @@ const BecomeRider = () => {
   const cardescription = useRef(null);
 
   const [formState, setFormState] = useState(1);
+
+  const navigate = useNavigate();
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLoggedIn(true);
+        name.current.value = user.displayName;
+        email.current.value = user.email;
+      } else {
+        return navigate("/login");
+      }
+    });
+  }, []);
 
   const submitRegister = (e) => {
     e.preventDefault();

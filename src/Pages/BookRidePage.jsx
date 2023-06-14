@@ -5,14 +5,33 @@ import L from "leaflet";
 import { createControlComponent } from "@react-leaflet/core";
 import "leaflet-routing-machine";
 import { toast } from "react-toastify";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../Confitg/DatabaseConfig";
+import { useNavigate } from "react-router-dom";
 
 const BookRidePage = () => {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [photo, setPhoto] = useState("");
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setName(user.displayName);
+        setPhoto(user.photoURL);
+      } else {
+        return navigate("/login");
+      }
+    });
+  }, []);
+
   const [location, setLocation] = useState("Unknown");
   const [geolocation, setGeolocation] = useState(null);
 
   const [destination, setDestination] = useState(null);
 
-  const [formState, setFormState] = useState(1);
+  const [formState, setFormState] = useState(0);
 
   const destinationCities = [
     "Accra",
@@ -30,7 +49,7 @@ const BookRidePage = () => {
     "3:00pm",
     "6:00pm",
   ];
-  const [time, setTime] = useState("4:00pm");
+  const [time, setTime] = useState(null);
 
   function getLocation() {
     if (navigator.geolocation) {
@@ -54,16 +73,17 @@ const BookRidePage = () => {
   useEffect(() => {
     if (geolocation !== null) {
       const apiKey = process.env.REACT_APP_GEOLOCAT_API;
-      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${geolocation.lat}&lon=${geolocation.lon}&appid=${apiKey}`;
+      const apiUrl = `http://api.openweathermap.org/geo/1.0/reverse?lat=${geolocation.lat}&lon=${geolocation.lon}&limit=1&appid=${apiKey}`;
 
-      fetch(apiUrl)
-        .then((response) => response.json())
-        .then((data) => {
-          setLocation(data.name);
-        })
-        .catch((err) => {
-          toast.warning("something went wrong");
-        });
+      // fetch(apiUrl)
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     setLocation(data[0].state);
+      //     console.log(data);
+      //   })
+      //   .catch((err) => {
+      //     toast.warning("something went wrong");
+      //   });
     }
   }, [geolocation]);
 
@@ -90,6 +110,47 @@ const BookRidePage = () => {
 
   const RoutingMachine = createControlComponent(createRoutineMachineLayer);
 
+  //PDF fucntion////////////////////////////////////////////////
+
+  const generateTicket = async () => {
+    // Create a new PDF document
+
+    // Create a new PDF document with custom page size
+    const pdfDoc = await PDFDocument.create();
+    const pageWidth = 300; // Specify the width of the ticket
+    const pageHeight = 150; // Specify the height of the ticket
+    const page = pdfDoc.addPage([pageWidth, pageHeight]);
+
+    // Set font and size
+    const fontSize = 12;
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    page.setFont(font);
+
+    // Set text position and color
+    const x = 50;
+    const y = page.getHeight() - 50;
+    const color = rgb(0, 0, 0); // Black color
+    page.drawText(
+      `Ticket for ${name}
+       Seat Number : 24
+
+       ticket id : #4255-32372-12B
+    `,
+      { x, y, size: fontSize, color }
+    );
+
+    // Save the PDF as a Blob
+    const pdfBytes = await pdfDoc.save();
+
+    // Create a download link and trigger the download
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "ticket.pdf";
+    link.click();
+  };
+
   const rideRequest = (e) => {
     e.preventDefault();
     if (formState == 1) {
@@ -106,7 +167,7 @@ const BookRidePage = () => {
     <>
       <MapContainer
         center={[geolocation.lat, geolocation.lon]}
-        zoom={13}
+        zoom={15}
         scrollWheelZoom={false}
         className="main-container"
       >
@@ -163,6 +224,11 @@ const BookRidePage = () => {
                   Be at the {location} transit station at{" "}
                   <span className="text-warning">{time}</span>
                 </p>
+                <div>
+                  <Button className="text-center" onClick={generateTicket}>
+                    Generate Ticket
+                  </Button>
+                </div>
               </>
             ) : (
               <>
@@ -240,7 +306,7 @@ const BookRidePage = () => {
                   className="form-select"
                   aria-label="Default select example"
                   defaultValue="Expected take off time"
-                  d
+                  required
                   onChange={(e) => setTime(e.target.value)}
                 >
                   <option disabled>Expected take off time</option>
