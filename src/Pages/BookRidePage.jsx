@@ -58,7 +58,7 @@ const BookRidePage = () => {
   const createRoutineMachineLayer = ({ destLat, destLon }) => {
     const instance = L.Routing.control({
       waypoints: [
-        L.latLng(33.50546582848033, 36.49547681726967),
+        L.latLng(geolocation.lat, geolocation.lon),
         L.latLng(destLat, destLon),
       ],
       show: false,
@@ -75,7 +75,7 @@ const BookRidePage = () => {
 
     return instance;
   };
-
+  console.log(destination);
   const RoutingMachine = createControlComponent(createRoutineMachineLayer);
 
   return geolocation ? (
@@ -91,8 +91,32 @@ const BookRidePage = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <RoutingMachine
-          destLat={33.50546582848033}
-          destLon={36.29547681726967}
+          destLat={
+            destination == "Accra"
+              ? 5.6037
+              : destination == "Kumasi"
+              ? 6.6885
+              : destination == "Cape-Coast"
+              ? 5.1104
+              : destination == "Takoradi"
+              ? 4.9126
+              : destination == "Techiman"
+              ? 7.5911
+              : geolocation.lat
+          }
+          destLon={
+            destination == "Accra"
+              ? -0.187
+              : destination == "Kumasi"
+              ? -1.6244
+              : destination == "Cape-Coast"
+              ? -1.2464
+              : destination == "Takoradi"
+              ? -1.774
+              : destination == "Techiman"
+              ? -1.935
+              : geolocation.lon
+          }
         />
         <Marker position={[geolocation.lat, geolocation.lon]}>
           <Popup>
@@ -127,18 +151,18 @@ const BookRidePage = () => {
 
           <Form.Group className="my-0 py-0 g-0">
             <select
-              className="form-select "
+              className="form-select"
               aria-label="Default select example"
+              defaultValue="Choose Route"
+              onChange={(e) => setDestination(e.target.value)}
             >
-              <option selected>Choose Route</option>
+              <option disabled>Choose Route</option>
               {destinationCities.map((destination) => {
                 return destination !== location ? (
                   <option key={destination} value={destination}>
                     {destination}
                   </option>
-                ) : (
-                  ""
-                );
+                ) : null;
               })}
             </select>
           </Form.Group>
