@@ -1,6 +1,9 @@
+import { addDoc, collection } from "firebase/firestore";
 import React, { useRef, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { db } from "../Confitg/DatabaseConfig";
+import { toast } from "react-toastify";
 
 const BecomeRider = () => {
   const name = useRef(null);
@@ -17,9 +20,40 @@ const BecomeRider = () => {
 
   const submitRegister = (e) => {
     e.preventDefault();
+
     if (formState >= 3) {
+      const toastId = toast.loading("Signing you up...");
+      console.log(formState);
       //submitForm
+      addDoc(collection(db, "Drivers"), {
+        name: name.current.value,
+        email: email.current.value,
+        phone: phone.current.value,
+        worklocation: worklocation.current.value,
+        vehicle: vehicle.current.value,
+        carNumber: carNumber.current.value,
+        cardescription: cardescription.current.value,
+        idCard: idCard.current.value,
+      })
+        .then(() => {
+          toast.update(toastId, {
+            render: "Application successfully sent!",
+            type: "success",
+            isLoading: false,
+            autoClose: true,
+          });
+          setFormState(0);
+        })
+        .catch((error) =>
+          toast.update(toastId, {
+            render: error.code,
+            type: "error",
+            isLoading: false,
+            autoClose: true,
+          })
+        );
     } else {
+      console.log(formState);
       setFormState(formState + 1);
     }
   };
@@ -57,7 +91,7 @@ const BecomeRider = () => {
               {formState == 2 ? (
                 <h2>About your vehicle!</h2>
               ) : formState == 3 ? (
-                <h2 className="text-success">You're almost done!</h2>
+                <h2 className="text-dark">You're almost done!</h2>
               ) : (
                 <h2>Join the Ride!</h2>
               )}
@@ -72,6 +106,7 @@ const BecomeRider = () => {
                     type="text"
                     placeholder="Full name.."
                     ref={name}
+                    required
                     className="py-3"
                   />
                 </Form.Group>
@@ -80,6 +115,7 @@ const BecomeRider = () => {
                     type="tel"
                     placeholder="Phone +233"
                     ref={phone}
+                    required
                     className="py-3"
                   />
                 </Form.Group>
@@ -89,6 +125,7 @@ const BecomeRider = () => {
                     placeholder="Email.."
                     ref={email}
                     className="py-3"
+                    required
                   />
                 </Form.Group>
                 <Form.Group>
@@ -97,6 +134,7 @@ const BecomeRider = () => {
                     placeholder="eg Accra:"
                     ref={worklocation}
                     className="py-3"
+                    required
                   />
                   <a className="mt-3 d-flex text-muted text-decoration-none">
                     Need more information? contact us
@@ -111,6 +149,7 @@ const BecomeRider = () => {
                     placeholder="vehicle type"
                     ref={vehicle}
                     className="py-3"
+                    required
                   />
                 </Form.Group>
                 <Form.Group>
@@ -119,6 +158,7 @@ const BecomeRider = () => {
                     placeholder="Phone +233"
                     ref={age}
                     className="py-3"
+                    required
                   />
                 </Form.Group>
                 <Form.Group>
@@ -127,6 +167,7 @@ const BecomeRider = () => {
                     placeholder="Ghana card umber"
                     ref={idCard}
                     className="py-3"
+                    required
                   />
                 </Form.Group>
                 <Form.Group>
@@ -135,6 +176,7 @@ const BecomeRider = () => {
                     placeholder="car number"
                     ref={carNumber}
                     className="py-3"
+                    required
                   />
                   <a className="mt-3 d-flex text-muted text-decoration-none">
                     Need more information? contact us
@@ -149,21 +191,37 @@ const BecomeRider = () => {
                     placeholder="Vehicle description"
                     ref={cardescription}
                     className="py-3"
+                    required
                   />
                 </Form.Group>
               </>
             ) : (
-              <h1 className="text-success">Success</h1>
+              <img
+                src="https://cdn.pixabay.com/photo/2020/04/10/13/28/success-5025797_1280.png"
+                alt=""
+                width="200px"
+                className="mx-auto"
+              />
             )}
 
             {formState == 3 ? (
-              <Button type="submit" className=" py-3 ">
+              <Button type="submit" className=" py-3">
                 Become a Rider
               </Button>
-            ) : (
+            ) : formState < 3 && formState !== 0 ? (
               <Button type="submit" className=" py-3">
                 Proceed
               </Button>
+            ) : (
+              <>
+                <h1 className="text-success py-0 my-0">
+                  Application successful
+                </h1>
+                <p className="py-0 my-0">We will get back to you shrotly</p>
+                <Link to="/" className="w-50 mx-auto py-2 mb-2 btn btn-primary">
+                  Back to Home
+                </Link>
+              </>
             )}
           </Form>
         </div>
