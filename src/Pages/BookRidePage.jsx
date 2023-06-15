@@ -88,24 +88,28 @@ const BookRidePage = () => {
   }, [geolocation]);
 
   const createRoutineMachineLayer = ({ destLat, destLon }) => {
-    const instance = L.Routing.control({
-      waypoints: [
-        L.latLng(geolocation.lat, geolocation.lon),
-        L.latLng(destLat, destLon),
-      ],
-      show: false,
-      lineOptions: {
-        styles: [
-          {
-            color: " blue",
-            opacity: 0.8,
-            weight: 4,
-          },
+    try {
+      const instance = L.Routing.control({
+        waypoints: [
+          L.latLng(geolocation.lat, geolocation.lon),
+          L.latLng(destLat, destLon),
         ],
-      },
-    });
+        show: false,
+        lineOptions: {
+          styles: [
+            {
+              color: " blue",
+              opacity: 0.8,
+              weight: 4,
+            },
+          ],
+        },
+      });
 
-    return instance;
+      return instance;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const RoutingMachine = createControlComponent(createRoutineMachineLayer);
@@ -116,39 +120,46 @@ const BookRidePage = () => {
     // Create a new PDF document
 
     // Create a new PDF document with custom page size
-    const pdfDoc = await PDFDocument.create();
-    const pageWidth = 300; // Specify the width of the ticket
-    const pageHeight = 150; // Specify the height of the ticket
-    const page = pdfDoc.addPage([pageWidth, pageHeight]);
+    try {
+      const pdfDoc = await PDFDocument.create();
+      const pageWidth = 300; // Specify the width of the ticket
+      const pageHeight = 150; // Specify the height of the ticket
+      const page = pdfDoc.addPage([pageWidth, pageHeight]);
 
-    // Set font and size
-    const fontSize = 12;
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    page.setFont(font);
+      // Set font and size
+      const fontSize = 12;
+      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      page.setFont(font);
 
-    // Set text position and color
-    const x = 50;
-    const y = page.getHeight() - 50;
-    const color = rgb(0, 0, 0); // Black color
-    page.drawText(
-      `Ticket for ${name}
-       Seat Number : 24
+      // Set text position and color
+      const x = 50;
+      const y = page.getHeight() - 50;
+      const color = rgb(0, 0, 0); // Black color
+      page.drawText(
+        `Ticket for ${name}
+         Seat Number : 24
+  
+         ticket id : #4255-32372-12B
 
-       ticket id : #4255-32372-12B
-    `,
-      { x, y, size: fontSize, color }
-    );
+         ${location} to ${destinationCities}
+       `,
+        { x, y, size: fontSize, color }
+      );
 
-    // Save the PDF as a Blob
-    const pdfBytes = await pdfDoc.save();
+      // Save the PDF as a Blob
+      const pdfBytes = await pdfDoc.save();
 
-    // Create a download link and trigger the download
-    const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "ticket.pdf";
-    link.click();
+      // Create a download link and trigger the download
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "ticket.pdf";
+      link.click();
+      toast.success("ticket successfully downloaded");
+    } catch (error) {
+      toast.error("Couldn't download ticket");
+    }
   };
 
   const rideRequest = (e) => {
@@ -210,6 +221,14 @@ const BookRidePage = () => {
         </Marker>
       </MapContainer>
       <div className="zindex-5 bg-dark text-light opacity-100 px-5 py-4 mb-3 rounded-4">
+        <Button
+          className="mb-2 mx-auto text-center d-flex mt-0 btn btn-light"
+          onClick={() => {
+            return navigate("/");
+          }}
+        >
+          Back to home
+        </Button>
         <Form
           className=" mx-auto d-flex flex-column gap-3"
           onSubmit={rideRequest}
@@ -225,7 +244,10 @@ const BookRidePage = () => {
                   <span className="text-warning">{time}</span>
                 </p>
                 <div>
-                  <Button className="text-center" onClick={generateTicket}>
+                  <Button
+                    className="text-center mx-auto d-flex"
+                    onClick={generateTicket}
+                  >
                     Generate Ticket
                   </Button>
                 </div>
@@ -305,7 +327,6 @@ const BookRidePage = () => {
                 <select
                   className="form-select"
                   aria-label="Default select example"
-                  defaultValue="Expected take off time"
                   required
                   onChange={(e) => setTime(e.target.value)}
                 >

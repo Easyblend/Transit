@@ -1,33 +1,37 @@
-import { addDoc, collection } from "firebase/firestore";
-import React, { useEffect, useRef, useState } from "react";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../Confitg/DatabaseConfig";
 import { toast } from "react-toastify";
 import { onAuthStateChanged } from "firebase/auth";
+import Navbar from "./Components/Navbar";
 
 const BecomeRider = () => {
-  const name = useRef(null);
-  const email = useRef(null);
-  const phone = useRef(null);
-  const worklocation = useRef(null);
-  const vehicle = useRef(null);
-  const age = useRef(null);
-  const idCard = useRef(null);
-  const carNumber = useRef(null);
-  const cardescription = useRef(null);
-
-  const [formState, setFormState] = useState(1);
-
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [uid, setUid] = useState(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [workLocation, setWorkLocation] = useState("");
+  const [vehicle, setVehicle] = useState("");
+  const [age, setAge] = useState("");
+  const [idCard, setIdCard] = useState("");
+  const [carNumber, setCarNumber] = useState("");
+  const [carDescription, setCarDescription] = useState("");
+  const [formState, setFormState] = useState(1);
+
+  const [photo, setPhoto] = useState("");
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setLoggedIn(true);
-        name.current.value = user.displayName;
-        email.current.value = user.email;
+        setName(user.displayName);
+        setEmail(user.email);
+        setUid(user.uid);
+        setPhoto(user.photoURL);
       } else {
         return navigate("/login");
       }
@@ -41,15 +45,15 @@ const BecomeRider = () => {
       const toastId = toast.loading("Signing you up...");
       console.log(formState);
       //submitForm
-      addDoc(collection(db, "Drivers"), {
-        name: name.current.value,
-        email: email.current.value,
-        phone: phone.current.value,
-        worklocation: worklocation.current.value,
-        vehicle: vehicle.current.value,
-        carNumber: carNumber.current.value,
-        cardescription: cardescription.current.value,
-        idCard: idCard.current.value,
+      setDoc(doc(db, "Driver", uid), {
+        name,
+        email,
+        phone,
+        workLocation,
+        vehicle,
+        carNumber,
+        carDescription,
+        idCard,
       })
         .then(() => {
           toast.update(toastId, {
@@ -76,22 +80,10 @@ const BecomeRider = () => {
 
   return (
     <div>
-      <nav className="navbar px-5">
-        <Link to="/" className="navbar-brand d-flex align-items-center">
-          Transit
-        </Link>
-        <ul className="navbar-nav ml-auto">
-          <li className="nav-item nav-link">
-            <Link to="/" className=" nav-link">
-              Go Home
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <Navbar photo={photo} name={name} />
       <div className="container">
         <div className="row justify-content-center align-items-center mt-5 pt-5">
           <div className="text-center">
-            {" "}
             <h1 className="display-1">
               Become a <span className="text-primary fw-bold">Rider</span>
             </h1>
@@ -104,9 +96,9 @@ const BecomeRider = () => {
             onSubmit={submitRegister}
           >
             <div>
-              {formState == 2 ? (
+              {formState === 2 ? (
                 <h2>About your vehicle!</h2>
-              ) : formState == 3 ? (
+              ) : formState === 3 ? (
                 <h2 className="text-dark">You're almost done!</h2>
               ) : (
                 <h2>Join the Ride!</h2>
@@ -115,13 +107,14 @@ const BecomeRider = () => {
                 Create an Account be part of the Ride
               </p>
             </div>
-            {formState == 1 ? (
+            {formState === 1 ? (
               <>
                 <Form.Group>
                   <Form.Control
                     type="text"
                     placeholder="Full name.."
-                    ref={name}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     required
                     className="py-3"
                   />
@@ -130,7 +123,8 @@ const BecomeRider = () => {
                   <Form.Control
                     type="tel"
                     placeholder="Phone +233"
-                    ref={phone}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     required
                     className="py-3"
                   />
@@ -139,7 +133,8 @@ const BecomeRider = () => {
                   <Form.Control
                     type="text"
                     placeholder="Email.."
-                    ref={email}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="py-3"
                     required
                   />
@@ -148,7 +143,8 @@ const BecomeRider = () => {
                   <Form.Control
                     type="text"
                     placeholder="eg Accra:"
-                    ref={worklocation}
+                    value={workLocation}
+                    onChange={(e) => setWorkLocation(e.target.value)}
                     className="py-3"
                     required
                   />
@@ -157,13 +153,14 @@ const BecomeRider = () => {
                   </a>
                 </Form.Group>
               </>
-            ) : formState == 2 ? (
+            ) : formState === 2 ? (
               <>
                 <Form.Group>
                   <Form.Control
                     type="text"
                     placeholder="vehicle type"
-                    ref={vehicle}
+                    value={vehicle}
+                    onChange={(e) => setVehicle(e.target.value)}
                     className="py-3"
                     required
                   />
@@ -171,8 +168,9 @@ const BecomeRider = () => {
                 <Form.Group>
                   <Form.Control
                     type="number"
-                    placeholder="Phone +233"
-                    ref={age}
+                    placeholder="Age"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
                     className="py-3"
                     required
                   />
@@ -180,8 +178,9 @@ const BecomeRider = () => {
                 <Form.Group>
                   <Form.Control
                     type="text"
-                    placeholder="Ghana card umber"
-                    ref={idCard}
+                    placeholder="Ghana card number"
+                    value={idCard}
+                    onChange={(e) => setIdCard(e.target.value)}
                     className="py-3"
                     required
                   />
@@ -190,7 +189,8 @@ const BecomeRider = () => {
                   <Form.Control
                     type="text"
                     placeholder="car number"
-                    ref={carNumber}
+                    value={carNumber}
+                    onChange={(e) => setCarNumber(e.target.value)}
                     className="py-3"
                     required
                   />
@@ -199,13 +199,14 @@ const BecomeRider = () => {
                   </a>
                 </Form.Group>
               </>
-            ) : formState == 3 ? (
+            ) : formState === 3 ? (
               <>
                 <Form.Group>
                   <Form.Control
                     type="text"
                     placeholder="Vehicle description"
-                    ref={cardescription}
+                    value={carDescription}
+                    onChange={(e) => setCarDescription(e.target.value)}
                     className="py-3"
                     required
                   />
@@ -220,24 +221,23 @@ const BecomeRider = () => {
               />
             )}
 
-            {formState == 3 ? (
-              <Button type="submit" className=" py-3">
-                Become a Rider
+            {formState === 3 ? (
+              <Button type="submit" className=" py-2 px-4 rounded">
+                Complete
               </Button>
-            ) : formState < 3 && formState !== 0 ? (
-              <Button type="submit" className=" py-3">
-                Proceed
+            ) : formState === 1 || formState === 2 ? (
+              <Button type="submit" className="py-2 px-4 rounded">
+                Next
               </Button>
             ) : (
-              <>
-                <h1 className="text-success py-0 my-0">
-                  Application successful
-                </h1>
-                <p className="py-0 my-0">We will get back to you shrotly</p>
-                <Link to="/" className="w-50 mx-auto py-2 mb-2 btn btn-primary">
-                  Back to Home
-                </Link>
-              </>
+              <Button
+                onClick={() => {
+                  return navigate("/");
+                }}
+                className=" py-2 px-4 rounded"
+              >
+                Back to Home
+              </Button>
             )}
           </Form>
         </div>

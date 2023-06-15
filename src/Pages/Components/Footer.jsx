@@ -7,7 +7,7 @@ const Footer = () => {
       <Container className="text-center">
         <div className="row my-auto align-items-center">
           <div className="col">
-            <p className="my-0 py-0">Contact information</p>
+            <h6 className="my-0 py-0">Contact information</h6>
             <div>
               +233 597 467 141 <br />
               +233 597 467 141
@@ -21,7 +21,7 @@ const Footer = () => {
             <p className="mb-0">123 Main Street, Greater Accra, Ghana</p>
           </div>
           <div className="col">
-            <p className="my-0 py-0">Sites</p>
+            <h6 className="my-0 py-0">Sites</h6>
             <div>
               <a href="https://elorm-media.netlify.app">
                 Elorm's Media and Business Center
