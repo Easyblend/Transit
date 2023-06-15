@@ -31,7 +31,7 @@ const BookRidePage = () => {
 
   const [destination, setDestination] = useState(null);
 
-  const [formState, setFormState] = useState(0);
+  const [formState, setFormState] = useState(1);
 
   const destinationCities = [
     "Accra",
