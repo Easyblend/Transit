@@ -20,6 +20,7 @@ root.render(
       newestOnTop={false}
       closeOnClick
       rtl={false}
+      limit={1}
       pauseOnFocusLoss
       draggable
       pauseOnHover
