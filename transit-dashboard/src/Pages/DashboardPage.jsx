@@ -1,9 +1,10 @@
 import React from "react";
+import Table from "../Components/Table";
 
 const DashboardPage = () => {
   return (
-    <div className="container-fluid">
-      <div className="row  px-0 g-0 mt-4 mx-auto">
+    <div className="container">
+      <div className="row  px-0 g-0 mt-4">
         <div
           className="col "
           style={{
@@ -35,9 +36,7 @@ const DashboardPage = () => {
                 <span className="h1 text-primary">56</span> Rides are waiting to
                 be completed
               </p>
-              <a href="#" class="btn btn-primary">
-                View Rider
-              </a>
+              <a class="btn btn-primary">View Rider</a>
             </div>
           </div>
         </div>
@@ -49,12 +48,14 @@ const DashboardPage = () => {
                 <span className="h1 text-primary">12</span> Drivers are
                 currently available
               </p>
-              <a href="#" class="btn btn-primary">
-                View drivers
-              </a>
+              <a class="btn btn-primary">View drivers</a>
             </div>
           </div>
         </div>
+      </div>
+      <div className="mt-5 table">
+        {" "}
+        <Table />
       </div>
     </div>
   );
