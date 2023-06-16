@@ -5,33 +5,40 @@ import L from "leaflet";
 import { createControlComponent } from "@react-leaflet/core";
 import "leaflet-routing-machine";
 import { toast } from "react-toastify";
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, StandardFonts, error, rgb } from "pdf-lib";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../Confitg/DatabaseConfig";
+import { auth, db } from "../Confitg/DatabaseConfig";
 import { useNavigate } from "react-router-dom";
+import { addDoc, collection } from "firebase/firestore";
+import PaystackPop from "@paystack/inline-js";
 
 const BookRidePage = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setName(user.displayName);
         setPhoto(user.photoURL);
+        setEmail(user.email);
       } else {
         return navigate("/login");
       }
     });
   }, []);
 
-  const [location, setLocation] = useState("Unknown");
+  const [location, setLocation] = useState("Ghana");
   const [geolocation, setGeolocation] = useState(null);
 
   const [destination, setDestination] = useState(null);
 
   const [formState, setFormState] = useState(1);
+
+  const [seat, setSeat] = useState(null);
+  const [bus, setBus] = useState(null);
 
   const destinationCities = [
     "Accra",
@@ -168,9 +175,33 @@ const BookRidePage = () => {
       setFormState(formState + 1);
     } else {
       //send data to database
-
-      setFormState(0);
-      toast.success("Ride successfully Booked!");
+      const toastId = toast.loading("Finding a ride..");
+      addDoc(collection(db, "Booked Rides"), {
+        Name: name,
+        Location: location,
+        Location_Lat_Lon: geolocation,
+        destination: destination,
+      })
+        .then(() => {
+          const paystack = new PaystackPop();
+          paystack.newTransaction({
+            key: "pk_test_f7a984d83d5074b0c374758ddbe7b39e2d115fce",
+            email: email,
+            amount: 200 * 100,
+          });
+        })
+        .then(() => {
+          setFormState(0);
+          toast.update(toastId, {
+            render: "Rider successfully Booked",
+            type: "success",
+            isLoading: false,
+            autoClose: true,
+          });
+        })
+        .catch((error) => {
+          toast.error(error.code);
+        });
     }
   };
 
@@ -268,6 +299,8 @@ const BookRidePage = () => {
                   required
                   className="py-2"
                   value={location}
+                  disabled
+                  onChange={(e) => setLocation(e.target.value)}
                 />
               </Form.Group>
 
@@ -308,6 +341,7 @@ const BookRidePage = () => {
                   placeholder="Bus type e.g VIP Transit"
                   required
                   className="py-2"
+                  onChange={(e) => setBus(e.target.value)}
                 />
               </Form.Group>
 
@@ -318,6 +352,7 @@ const BookRidePage = () => {
                 max={24}
                 min={1}
                 className="py-2"
+                onChange={(e) => setSeat(e.target.value)}
               />
               <p className="text-center my-0 py-0">
                 <span className="text-danger">24 </span>seats Available
