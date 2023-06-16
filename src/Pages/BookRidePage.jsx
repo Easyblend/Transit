@@ -171,38 +171,46 @@ const BookRidePage = () => {
 
   const rideRequest = (e) => {
     e.preventDefault();
+
     if (formState == 1) {
       setFormState(formState + 1);
     } else {
-      //send data to database
-      const toastId = toast.loading("Finding a ride..");
-      addDoc(collection(db, "Booked Rides"), {
-        Name: name,
-        Location: location,
-        Location_Lat_Lon: geolocation,
-        destination: destination,
-        time: serverTimestamp(),
-      })
-        .then(() => {
-          const paystack = new PaystackPop();
-          paystack.newTransaction({
-            key: "pk_test_f7a984d83d5074b0c374758ddbe7b39e2d115fce",
-            email: email,
-            amount: 200 * 100,
+      const toastId = toast.loading("Pending Payment...");
+
+      //Initialize and collect payment
+      const paystack = new PaystackPop();
+
+      paystack.newTransaction({
+        key: process.env.REACT_APP_PAYSTACK_KEY,
+        email: email,
+        amount: 200 * 100,
+        onSuccess: () => {
+          //send data to database
+          addDoc(collection(db, "Booked Rides"), {
+            Name: name,
+            Location: location,
+            Location_Lat_Lon: geolocation,
+            destination: destination,
+            time: serverTimestamp(),
+          }).then(() => {
+            setFormState(0);
+            toast.update(toastId, {
+              render: "Rider successfully Booked",
+              type: "success",
+              isLoading: false,
+              autoClose: true,
+            });
           });
-        })
-        .then(() => {
-          setFormState(0);
+        },
+        onCancel: () => {
           toast.update(toastId, {
-            render: "Rider successfully Booked",
-            type: "success",
+            render: "Payment Canceled",
+            type: "warning",
             isLoading: false,
             autoClose: true,
           });
-        })
-        .catch((error) => {
-          toast.error(error.code);
-        });
+        },
+      });
     }
   };
 

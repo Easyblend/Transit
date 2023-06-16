@@ -5,14 +5,12 @@ import { db } from "../Config/DatabaseConfig";
 const Table = () => {
   //Getting the list of Registered Drivers//
   const [drivers, setDrivers] = useState([]);
+
   const fetchDrivers = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Driver"));
-
-      querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-        setDrivers({ ...doc.data() });
-      });
+      const newDrivers = querySnapshot.docs.map((doc) => doc.data());
+      setDrivers(newDrivers);
     } catch (error) {
       console.log(error);
     }
@@ -21,6 +19,8 @@ const Table = () => {
   useEffect(() => {
     fetchDrivers();
   }, []);
+
+  console.log(drivers);
 
   return (
     <table class="table table-striped-columns">
