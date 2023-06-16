@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../Confitg/DatabaseConfig";
 import { toast } from "react-toastify";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const SignUp = () => {
   const email = useRef(null);
@@ -37,6 +37,7 @@ const SignUp = () => {
             name: name.current.value,
             email: email.current.value,
             phone: phone.current.value,
+            time: serverTimestamp(),
           })
             .then((doc) => console.log("success", doc))
             .catch((error) => console.log(error));

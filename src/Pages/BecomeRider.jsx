@@ -54,6 +54,7 @@ const BecomeRider = () => {
         carNumber,
         carDescription,
         idCard,
+        time: serverTimestamp(),
       })
         .then(() => {
           toast.update(toastId, {

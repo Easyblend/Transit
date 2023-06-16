@@ -9,7 +9,7 @@ import { PDFDocument, StandardFonts, error, rgb } from "pdf-lib";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../Confitg/DatabaseConfig";
 import { useNavigate } from "react-router-dom";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import PaystackPop from "@paystack/inline-js";
 
 const BookRidePage = () => {
@@ -181,6 +181,7 @@ const BookRidePage = () => {
         Location: location,
         Location_Lat_Lon: geolocation,
         destination: destination,
+        time: serverTimestamp(),
       })
         .then(() => {
           const paystack = new PaystackPop();
