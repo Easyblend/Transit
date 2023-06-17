@@ -1,12 +1,12 @@
 import React from "react";
 import Table from "../Components/Table";
 
-const DashboardPage = () => {
+const DashboardPage = ({ riders, drivers }) => {
   return (
     <div className="container">
       <div className="row  px-0 g-0 mt-4">
         <div
-          className="col "
+          className="col"
           style={{
             backgroundImage: `url(
                 https://images.pexels.com/photos/14534763/pexels-photo-14534763.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1            )`,
@@ -21,7 +21,7 @@ const DashboardPage = () => {
             boxShadow: "0px 0px 6px 5px rgba(0,0,0,0.2)",
           }}
         >
-          <div className="row pt-4 px-5 text-light">
+          <div className="row pt-4 px-2 px-sm-4 text-light">
             <h4 className="col-6">Dashboard</h4>
             <div className="col-6 text-end">Profile</div>
           </div>
@@ -33,8 +33,9 @@ const DashboardPage = () => {
             <div class="card-body">
               <h5 class="card-title">Rides to be Completed</h5>
               <p class="card-text">
-                <span className="h1 text-primary">56</span> Rides are waiting to
-                be completed
+                <span className="h1 text-primary">{riders?.length}</span>
+                {riders?.length > 1 ? " Customers are" : " Customer is"} waiting
+                for a ride
               </p>
               <a class="btn btn-primary">View Rider</a>
             </div>
@@ -45,8 +46,8 @@ const DashboardPage = () => {
             <div class="card-body">
               <h5 class="card-title">Total Number of Drivers</h5>
               <p class="card-text">
-                <span className="h1 text-primary">12</span> Drivers are
-                currently available
+                <span className="h1 text-primary">{drivers?.length}</span>{" "}
+                Drivers are currently available
               </p>
               <a class="btn btn-primary">View drivers</a>
             </div>
@@ -55,7 +56,7 @@ const DashboardPage = () => {
       </div>
       <div className="mt-5 table">
         {" "}
-        <Table />
+        <Table riders={riders} drivers={drivers} />
       </div>
     </div>
   );

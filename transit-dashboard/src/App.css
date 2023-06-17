@@ -4,6 +4,10 @@
   padding: 0;
 }
 
+body {
+  position: relative;
+}
+
 .App {
   text-align: center;
 }
@@ -45,8 +49,10 @@
 
 /*Siode bar CSS written here ***********************************************/
 
-.sidebar {
-  position: relative;
+.sidebars {
+  position: fixed;
+  left: 0;
+  width: fit-content;
 }
 
 .setting {

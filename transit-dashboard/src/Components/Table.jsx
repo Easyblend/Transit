@@ -1,58 +1,40 @@
-import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../Config/DatabaseConfig";
+import React from "react";
 
-const Table = () => {
+const Table = ({ riders, drivers }) => {
   //Getting the list of Registered Drivers//
-  const [drivers, setDrivers] = useState([]);
 
-  const fetchDrivers = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, "Driver"));
-      const newDrivers = querySnapshot.docs.map((doc) => doc.data());
-      setDrivers(newDrivers);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchDrivers();
-  }, []);
-
-  console.log(drivers);
-
-  return (
-    <table class="table table-striped-columns">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">First</th>
-          <th scope="col">Last</th>
-          <th scope="col">Handle</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr>
-        <tr>
-          <th scope="row">2</th>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <th scope="row">3</th>
-          <td>Larry the Bird</td>
-          <td>Junoio Peter</td>
-          <td>@twitter</td>
-        </tr>
-      </tbody>
-    </table>
+  return riders ? (
+    <div class="table-responsive">
+      <table class="table table-striped table-hover caption-top table-responsive ">
+        <caption>Today's Ordered Tickets</caption>
+        <thead>
+          <tr>
+            <th scope="col">Ticket #</th>
+            <th scope="col">Destination</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Name</th>
+          </tr>
+        </thead>
+        <tbody className="table-group-divider">
+          {riders.map((rider) => {
+            return (
+              <tr>
+                <th scope="row">{rider.ticket_Id}</th>
+                <td>{rider.destination}</td>
+                <td>unset</td>
+                <td>{rider.Name}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <div className="d-flex justify-content-center ">
+      <div class="spinner-border text-primary " role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
   );
 };
 

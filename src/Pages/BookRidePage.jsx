@@ -17,6 +17,27 @@ const BookRidePage = () => {
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
   const [email, setEmail] = useState("");
+  const [ticketId, setTicketId] = useState(null);
+  const [phone, setPhone] = useState(null);
+
+  //     //Create a ticket ID function
+  const generateTicketId = () => {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const length = 8;
+    const currentDate = new Date();
+    const twoDigitDate = ("0" + currentDate.getDate()).slice(-2);
+    let ticketId = "";
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      const randomCharacter = characters[randomIndex];
+      ticketId += randomCharacter;
+    }
+
+    ticketId += `-${twoDigitDate}`;
+
+    return ticketId;
+  };
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -24,6 +45,9 @@ const BookRidePage = () => {
         setName(user.displayName);
         setPhoto(user.photoURL);
         setEmail(user.email);
+
+        //assign TitcketID to usestate value
+        setTicketId(generateTicketId);
       } else {
         return navigate("/login");
       }
@@ -33,7 +57,7 @@ const BookRidePage = () => {
   const [location, setLocation] = useState("Ghana");
   const [geolocation, setGeolocation] = useState(null);
 
-  const [destination, setDestination] = useState(null);
+  const [destination, setDestination] = useState("Accra");
 
   const [formState, setFormState] = useState(1);
 
@@ -146,7 +170,7 @@ const BookRidePage = () => {
         `Ticket for ${name}
          Seat Number : 24
   
-         ticket id : #4255-32372-12B
+         ticket id : ${ticketId}
 
          ${location} to ${destinationCities}
        `,
@@ -163,7 +187,6 @@ const BookRidePage = () => {
       link.href = url;
       link.download = "ticket.pdf";
       link.click();
-      toast.success("ticket successfully downloaded");
     } catch (error) {
       toast.error("Couldn't download ticket");
     }
@@ -175,45 +198,66 @@ const BookRidePage = () => {
     if (formState == 1) {
       setFormState(formState + 1);
     } else {
+      console.log(destination);
+
       const toastId = toast.loading("Pending Payment...");
 
       //Initialize and collect payment
       const paystack = new PaystackPop();
-
-      paystack.newTransaction({
-        key: process.env.REACT_APP_PAYSTACK_KEY,
-        email: email,
-        amount: 200 * 100,
-        onSuccess: () => {
-          //send data to database
-          addDoc(collection(db, "Booked Rides"), {
-            Name: name,
-            Location: location,
-            Location_Lat_Lon: geolocation,
-            destination: destination,
-            time: serverTimestamp(),
-          }).then(() => {
-            setFormState(0);
-            toast.update(toastId, {
-              render: "Rider successfully Booked",
-              type: "success",
-              isLoading: false,
-              autoClose: true,
-            });
-          });
-        },
-        onCancel: () => {
-          toast.update(toastId, {
-            render: "Payment Canceled",
-            type: "warning",
-            isLoading: false,
-            autoClose: true,
-          });
-        },
+      addDoc(collection(db, "Booked Rides"), {
+        Name: name,
+        Location: location,
+        Location_Lat_Lon: geolocation,
+        destination: destination,
+        ticket_Id: ticketId,
+        phone,
+        time: serverTimestamp(),
+      }).then(() => {
+        setFormState(0);
+        toast.update(toastId, {
+          render: "Ride successfully Booked",
+          type: "success",
+          isLoading: false,
+          autoClose: true,
+        });
       });
+      // paystack.newTransaction({
+      //   key: process.env.REACT_APP_PAYSTACK_KEY,
+      //   email: email,
+      //   amount: 200 * 100,
+      //   onSuccess: () => {
+
+      //     //send data to database
+      //     addDoc(collection(db, "Booked Rides"), {
+      //       Name: name,
+      //       Location: location,
+      //       Location_Lat_Lon: geolocation,
+      //       destination: destination,
+      //       ticket_Id: ticketId,
+      //       time: serverTimestamp(),
+      //     }).then(() => {
+      //       setFormState(0);
+      //       toast.update(toastId, {
+      //         render: "Ride successfully Booked",
+      //         type: "success",
+      //         isLoading: false,
+      //         autoClose: true,
+      //       });
+      //     });
+      //   },
+      //   onCancel: () => {
+      //     toast.update(toastId, {
+      //       render: "Payment Canceled",
+      //       type: "warning",
+      //       isLoading: false,
+      //       autoClose: true,
+      //     });
+      //   },
+      // });
     }
   };
 
+  console.log(destination);
   return geolocation ? (
     <>
       <MapContainer
@@ -313,19 +357,12 @@ const BookRidePage = () => {
                 />
               </Form.Group>
 
-              {/* <Form.Control
-              type="text"
-              placeholder="To"
-              required
-              className="py-2"
-            /> */}
               <h4 className="text-center my-0 py-0 g-0">To</h4>
 
               <Form.Group className="my-0 py-0 g-0">
                 <select
                   className="form-select"
                   aria-label="Default select example"
-                  defaultValue="Choose Route"
                   onChange={(e) => setDestination(e.target.value)}
                 >
                   <option disabled>Choose Route</option>
@@ -337,6 +374,14 @@ const BookRidePage = () => {
                     ) : null;
                   })}
                 </select>
+                <Form.Control
+                  type="tel"
+                  placeholder="tel (+233)"
+                  required
+                  className="py-2 mt-2"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
               </Form.Group>
               <Button type="submit" className="mt-3">
                 Next
