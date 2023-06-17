@@ -106,15 +106,15 @@ const BookRidePage = () => {
       const apiKey = process.env.REACT_APP_GEOLOCAT_API;
       const apiUrl = `http://api.openweathermap.org/geo/1.0/reverse?lat=${geolocation.lat}&lon=${geolocation.lon}&limit=1&appid=${apiKey}`;
 
-      // fetch(apiUrl)
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     setLocation(data[0].state);
-      //     console.log(data);
-      //   })
-      //   .catch((err) => {
-      //     toast.warning("something went wrong");
-      //   });
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          setLocation(data[0].state);
+          console.log(data);
+        })
+        .catch((err) => {
+          toast.warning("something went wrong");
+        });
     }
   }, [geolocation]);
 
