@@ -1,31 +1,12 @@
 import React from "react";
 import Table from "../Components/Table";
+import Map from "../Components/Map";
 
 const DashboardPage = ({ riders, drivers }) => {
   return (
     <div className="container">
       <div className="row  px-0 g-0 mt-4">
-        <div
-          className="col"
-          style={{
-            backgroundImage: `url(
-                https://images.pexels.com/photos/14534763/pexels-photo-14534763.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1            )`,
-            backgroundPosition: "center center",
-            backgroundRepeat: "no-repeat",
-
-            height: "20rem",
-            width: "100%",
-            borderRadius: "20px",
-            backgroundColor: "rgba(0,0,0,0.4)",
-            backgroundBlendMode: "darken",
-            boxShadow: "0px 0px 6px 5px rgba(0,0,0,0.2)",
-          }}
-        >
-          <div className="row pt-4 px-2 px-sm-4 text-light">
-            <h4 className="col-6">Dashboard</h4>
-            <div className="col-6 text-end">Profile</div>
-          </div>
-        </div>
+        <Map riders={riders} />
       </div>
       <div className="row mt-5">
         <div class="col-sm-6 mb-3 mb-sm-0">
@@ -55,7 +36,6 @@ const DashboardPage = ({ riders, drivers }) => {
         </div>
       </div>
       <div className="mt-5 table">
-        {" "}
         <Table riders={riders} drivers={drivers} />
       </div>
     </div>

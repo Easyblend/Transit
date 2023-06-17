@@ -12,13 +12,15 @@ const Table = ({ riders, drivers }) => {
             <th scope="col">Ticket #</th>
             <th scope="col">Destination</th>
             <th scope="col">Phone</th>
-            <th scope="col">Name</th>
+            <th scope="col">
+              Name <span className="text-end">refresh</span>
+            </th>
           </tr>
         </thead>
         <tbody className="table-group-divider">
           {riders.map((rider) => {
             return (
-              <tr>
+              <tr key={Math.random()}>
                 <th scope="row">{rider.ticket_Id}</th>
                 <td>{rider.destination}</td>
                 <td>unset</td>

@@ -204,60 +204,43 @@ const BookRidePage = () => {
 
       //Initialize and collect payment
       const paystack = new PaystackPop();
-      addDoc(collection(db, "Booked Rides"), {
-        Name: name,
-        Location: location,
-        Location_Lat_Lon: geolocation,
-        destination: destination,
-        ticket_Id: ticketId,
-        phone,
-        time: serverTimestamp(),
-      }).then(() => {
-        setFormState(0);
-        toast.update(toastId, {
-          render: "Ride successfully Booked",
-          type: "success",
-          isLoading: false,
-          autoClose: true,
-        });
-      });
-      // paystack.newTransaction({
-      //   key: process.env.REACT_APP_PAYSTACK_KEY,
-      //   email: email,
-      //   amount: 200 * 100,
-      //   onSuccess: () => {
 
-      //     //send data to database
-      //     addDoc(collection(db, "Booked Rides"), {
-      //       Name: name,
-      //       Location: location,
-      //       Location_Lat_Lon: geolocation,
-      //       destination: destination,
-      //       ticket_Id: ticketId,
-      //       time: serverTimestamp(),
-      //     }).then(() => {
-      //       setFormState(0);
-      //       toast.update(toastId, {
-      //         render: "Ride successfully Booked",
-      //         type: "success",
-      //         isLoading: false,
-      //         autoClose: true,
-      //       });
-      //     });
-      //   },
-      //   onCancel: () => {
-      //     toast.update(toastId, {
-      //       render: "Payment Canceled",
-      //       type: "warning",
-      //       isLoading: false,
-      //       autoClose: true,
-      //     });
-      //   },
-      // });
+      paystack.newTransaction({
+        key: process.env.REACT_APP_PAYSTACK_KEY,
+        email: email,
+        amount: 200 * 100,
+        onSuccess: () => {
+          //send data to database
+          addDoc(collection(db, "Booked Rides"), {
+            Name: name,
+            Location: location,
+            Location_Lat_Lon: geolocation,
+            destination: destination,
+            ticket_Id: ticketId,
+            phone,
+            time: serverTimestamp(),
+          }).then(() => {
+            setFormState(0);
+            toast.update(toastId, {
+              render: "Ride successfully Booked",
+              type: "success",
+              isLoading: false,
+              autoClose: true,
+            });
+          });
+        },
+        onCancel: () => {
+          toast.update(toastId, {
+            render: "Payment Canceled",
+            type: "warning",
+            isLoading: false,
+            autoClose: true,
+          });
+        },
+      });
     }
   };
 
-  console.log(destination);
   return geolocation ? (
     <>
       <MapContainer

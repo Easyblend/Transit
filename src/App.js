@@ -1,7 +1,7 @@
 import "./App.css";
 import BecomeRider from "./Pages/BecomeRider";
 import BookRidePage from "./Pages/BookRidePage";
-import Footer from "./Pages/Components/Footer";
+
 import HomePage from "./Pages/HomePage";
 import LoginPage from "./Pages/LoginPage.jsx";
 import SignUp from "./Pages/SignUpPage";
