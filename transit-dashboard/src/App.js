@@ -10,8 +10,9 @@ import DriversPage from "./Pages/DriversPage";
 import AdminPortal from "./Pages/AdminPortal";
 
 function App() {
-  const [drivers, setDrivers] = useState([]);
+  const [drivers, setDrivers] = useState(null);
   const [riders, setRiders] = useState(null);
+  const [admin, setAdmin] = useState(false);
 
   const fetchDrivers = async () => {
     try {
@@ -43,8 +44,6 @@ function App() {
     fetchBookedRide();
   }, []);
 
-  const [admin, setAdmin] = useState(null);
-
   return (
     <div className="container-fluid mx-0 g-0 p-0">
       <div className="row mx-0 g-0 p-0">
@@ -61,6 +60,8 @@ function App() {
                   drivers={drivers}
                   setDrivers={setDrivers}
                   setRiders={setRiders}
+                  admin={admin}
+                  setAdmin={setAdmin}
                 />
               }
             />
@@ -72,6 +73,8 @@ function App() {
                   drivers={drivers}
                   setDrivers={setDrivers}
                   setRiders={setRiders}
+                  admin={admin}
+                  setAdmin={setAdmin}
                 />
               }
             />
@@ -82,6 +85,7 @@ function App() {
                   riders={riders}
                   drivers={drivers}
                   setDrivers={setDrivers}
+                  admin={admin}
                   setRiders={setRiders}
                 />
               }
@@ -94,6 +98,8 @@ function App() {
                   drivers={drivers}
                   setDrivers={setDrivers}
                   setRiders={setRiders}
+                  admin={admin}
+                  setAdmin={setAdmin}
                 />
               }
             />

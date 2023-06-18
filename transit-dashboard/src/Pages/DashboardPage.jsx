@@ -3,7 +3,14 @@ import Table from "../Components/Table";
 import Map from "../Components/Map";
 import { Link } from "react-router-dom";
 
-const DashboardPage = ({ riders, drivers, setRiders, setDrivers }) => {
+const DashboardPage = ({
+  riders,
+  drivers,
+  setRiders,
+  setDrivers,
+  admin,
+  setAdmin,
+}) => {
   return (
     <div className="container">
       <div className="row  px-0 g-0 mt-4">
@@ -40,10 +47,12 @@ const DashboardPage = ({ riders, drivers, setRiders, setDrivers }) => {
       </div>
       <div className="mt-5 table">
         <Table
+          admin={admin}
           riders={riders}
           drivers={drivers}
           setDrivers={setDrivers}
           setRiders={setRiders}
+          setAdmin={setAdmin}
         />
       </div>
     </div>

@@ -21,19 +21,15 @@ const Sidebar = () => {
               All Drivers
             </Link>
           </li>
+
           <li className="nav-item">
-            <Link to="/other" className="nav-link text-light">
-              Products
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/other" className="nav-link text-light">
+            <Link to="/admin-login" className="nav-link text-light">
               Admin Portal
             </Link>
           </li>
         </ul>
         <h6 className="ms-auto text-light  text-center setting mb-5">
-          Setting
+          Elrom's
         </h6>
       </div>
 
@@ -54,13 +50,11 @@ const Sidebar = () => {
               <i class="fa-solid fa-user"></i>
             </Link>
           </li>
+
           <li className="nav-item">
-            <Link to="/other" className="nav-link text-light">
-              <i class="fa-solid fa-unlock"></i>
+            <Link to="/admin-login" className="nav-link text-light">
+              <i class="fa-solid fa-lock"></i>
             </Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/other" className="nav-link text-light"></Link>
           </li>
         </ul>
         <h6 className="ms-auto text-light  text-center setting mb-5">

@@ -1,9 +1,44 @@
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import { auth } from "../Config/DatabaseConfig";
+import { toast } from "react-toastify";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
-const AdminPortal = () => {
+const AdminPortal = ({ setAdmin, admin }) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+
+  const navigate = useNavigate();
+
+  const login = (e) => {
+    e.preventDefault();
+    const toastId = toast.loading("signing in");
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        setAdmin(true);
+        toast.success("success");
+        toast.update(toastId, {
+          render: "Success",
+          type: "success",
+          isLoading: false,
+          autoClose: true,
+        });
+
+        navigate("/");
+
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setAdmin(false);
+        toast.error(errorCode);
+        console.log(error);
+      });
+  };
 
   return (
     <div className="mx-auto mt-5">
@@ -13,7 +48,10 @@ const AdminPortal = () => {
         <p>Log in if you have administration rights</p>
       </div>
 
-      <Form className=" mt-5 mx-auto d-flex flex-column gap-4 col-10 col-sm-6">
+      <Form
+        className=" mt-5 mx-auto d-flex flex-column gap-4 col-10 col-sm-6"
+        onSubmit={login}
+      >
         <Form.Group>
           <Form.Control
             type="email"

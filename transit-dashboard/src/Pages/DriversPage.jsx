@@ -1,9 +1,15 @@
 import React, { useEffect } from "react";
-import Table from "../Components/Table";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "../Config/DatabaseConfig";
 
-const DriversPage = ({ riders, setDrivers, setRiders, drivers }) => {
+const DriversPage = ({
+  riders,
+  setDrivers,
+  setRiders,
+  drivers,
+  Admin,
+  setAdmin,
+}) => {
   const fetchDrivers = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Driver"));
@@ -19,9 +25,9 @@ const DriversPage = ({ riders, setDrivers, setRiders, drivers }) => {
   });
 
   return drivers ? (
-    <div class="table-responsive">
+    <div class="table-responsive pt-5">
       <table class="table table-striped table-hover caption-top table-responsive ">
-        <caption>Today's Ordered Tickets</caption>
+        <caption>All available Transport Drivers</caption>
         <thead>
           <tr>
             <th scope="col">Name</th>
