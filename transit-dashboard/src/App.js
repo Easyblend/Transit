@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./Config/DatabaseConfig";
 import RideRequest from "./Pages/RideRequest";
+import DriversPage from "./Pages/DriversPage";
+import AdminPortal from "./Pages/AdminPortal";
 
 function App() {
   const [drivers, setDrivers] = useState([]);
@@ -41,6 +43,8 @@ function App() {
     fetchBookedRide();
   }, []);
 
+  const [admin, setAdmin] = useState(null);
+
   return (
     <div className="container-fluid mx-0 g-0 p-0">
       <div className="row mx-0 g-0 p-0">
@@ -64,6 +68,28 @@ function App() {
               path="/ride-request"
               element={
                 <RideRequest
+                  riders={riders}
+                  drivers={drivers}
+                  setDrivers={setDrivers}
+                  setRiders={setRiders}
+                />
+              }
+            />
+            <Route
+              path="/drivers"
+              element={
+                <DriversPage
+                  riders={riders}
+                  drivers={drivers}
+                  setDrivers={setDrivers}
+                  setRiders={setRiders}
+                />
+              }
+            />
+            <Route
+              path="/admin-login"
+              element={
+                <AdminPortal
                   riders={riders}
                   drivers={drivers}
                   setDrivers={setDrivers}
