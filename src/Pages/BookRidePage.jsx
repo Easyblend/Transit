@@ -110,10 +110,9 @@ const BookRidePage = () => {
         .then((response) => response.json())
         .then((data) => {
           setLocation(data[0].state);
-          console.log(data);
         })
         .catch((err) => {
-          toast.warning("something went wrong");
+          toast.warning(err);
         });
     }
   }, [geolocation]);
