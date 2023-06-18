@@ -1,8 +1,9 @@
 import React from "react";
 import Table from "../Components/Table";
 import Map from "../Components/Map";
+import { Link } from "react-router-dom";
 
-const DashboardPage = ({ riders, drivers }) => {
+const DashboardPage = ({ riders, drivers, setRiders, setDrivers }) => {
   return (
     <div className="container">
       <div className="row  px-0 g-0 mt-4">
@@ -18,7 +19,9 @@ const DashboardPage = ({ riders, drivers }) => {
                 {riders?.length > 1 ? " Customers are" : " Customer is"} waiting
                 for a ride
               </p>
-              <a class="btn btn-primary">View Rider</a>
+              <Link to="/ride-request" class="btn btn-primary">
+                View Rider
+              </Link>
             </div>
           </div>
         </div>
@@ -36,7 +39,12 @@ const DashboardPage = ({ riders, drivers }) => {
         </div>
       </div>
       <div className="mt-5 table">
-        <Table riders={riders} drivers={drivers} />
+        <Table
+          riders={riders}
+          drivers={drivers}
+          setDrivers={setDrivers}
+          setRiders={setRiders}
+        />
       </div>
     </div>
   );

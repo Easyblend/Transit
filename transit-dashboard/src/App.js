@@ -2,10 +2,10 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Sidebar from "./Components/Sidebar";
 import DashboardPage from "./Pages/DashboardPage";
-import OtherPages from "./Pages/OtherPages";
 import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { db } from "./Config/DatabaseConfig";
+import RideRequest from "./Pages/RideRequest";
 
 function App() {
   const [drivers, setDrivers] = useState([]);
@@ -51,9 +51,26 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<DashboardPage riders={riders} drivers={drivers} />}
+              element={
+                <DashboardPage
+                  riders={riders}
+                  drivers={drivers}
+                  setDrivers={setDrivers}
+                  setRiders={setRiders}
+                />
+              }
             />
-            <Route path="/other" element={<OtherPages />} />
+            <Route
+              path="/ride-request"
+              element={
+                <RideRequest
+                  riders={riders}
+                  drivers={drivers}
+                  setDrivers={setDrivers}
+                  setRiders={setRiders}
+                />
+              }
+            />
           </Routes>
         </div>
       </div>

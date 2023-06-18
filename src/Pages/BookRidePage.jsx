@@ -157,7 +157,7 @@ const BookRidePage = () => {
       const page = pdfDoc.addPage([pageWidth, pageHeight]);
 
       // Set font and size
-      const fontSize = 12;
+      const fontSize = 14;
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
       page.setFont(font);
 
@@ -167,7 +167,7 @@ const BookRidePage = () => {
       const color = rgb(0, 0, 0); // Black color
       page.drawText(
         `Ticket for ${name}
-         Seat Number : 24
+         Seat Number : ${seat}
   
          ticket id : ${ticketId}
 

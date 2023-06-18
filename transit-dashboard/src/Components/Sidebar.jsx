@@ -12,8 +12,8 @@ const Sidebar = () => {
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/other" className="nav-link text-light">
-              Users
+            <Link to="/ride-request" className="nav-link text-light">
+              Ride requests
             </Link>
           </li>
           <li className="nav-item">
@@ -45,7 +45,7 @@ const Sidebar = () => {
             </Link>
           </li>
           <li className="nav-item">
-            <Link to="/other" className="nav-link text-light">
+            <Link to="/ride-request" className="nav-link text-light">
               <i class="fa-solid fa-bus"></i>
             </Link>
           </li>
