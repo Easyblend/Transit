@@ -117,38 +117,49 @@ const Login = () => {
             Log In
           </Button>
         </Form>
-        {isVerified || (
-          <p
-            onClick={() => {
-              const verifyToast = toast.loading("sending verification link..");
-              sendEmailVerification(auth.currentUser)
-                .then(() => {
-                  toast.update(verifyToast, {
-                    render: `Email verification sent!`,
-                    type: "success",
-                    isLoading: false,
-                    autoClose: true,
-                    closeButton: true,
-                    closeOnClick: true,
-                  });
-                })
-                .catch((error) =>
-                  toast.update(verifyToast, {
-                    render: error.code,
-                    type: "error",
-                    isLoading: false,
-                    autoClose: true,
-                    closeButton: true,
-                    closeOnClick: true,
-                  })
-                );
-            }}
-            className="text-end text-muted text-decoration-none"
-            role="button"
+        <div className="d-flex justify-content-between">
+          <Link
+            to="/register"
+            className="text-center text-muted text-decoration-none "
           >
-            Verify Email
-          </p>
-        )}
+            Don't have an account?{" "}
+            <span className="text-primary">create account</span>
+          </Link>
+          {isVerified || (
+            <p
+              onClick={() => {
+                const verifyToast = toast.loading(
+                  "sending verification link.."
+                );
+                sendEmailVerification(auth.currentUser)
+                  .then(() => {
+                    toast.update(verifyToast, {
+                      render: `Email verification sent!`,
+                      type: "success",
+                      isLoading: false,
+                      autoClose: true,
+                      closeButton: true,
+                      closeOnClick: true,
+                    });
+                  })
+                  .catch((error) =>
+                    toast.update(verifyToast, {
+                      render: error.code,
+                      type: "error",
+                      isLoading: false,
+                      autoClose: true,
+                      closeButton: true,
+                      closeOnClick: true,
+                    })
+                  );
+              }}
+              className="text-end text-muted text-decoration-none"
+              role="button"
+            >
+              Verify Email
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
