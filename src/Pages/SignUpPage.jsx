@@ -111,7 +111,7 @@ const SignUp = () => {
       </div>
       <div className="col-sm-5 my-auto mx-auto col-12 ">
         <Form
-          className="  mt-5 d-flex flex-column gap-4"
+          className="  mt-5 d-flex flex-column gap-4 mb-3"
           onSubmit={submitRegister}
         >
           <div>
@@ -166,7 +166,7 @@ const SignUp = () => {
           to="/login"
           className="text-center text-muted text-decoration-none"
         >
-          Dont have an account? <span className="text-primary">Sign up</span>
+          Already have an account? <span className="text-primary">Log in</span>
         </Link>
       </div>
     </div>

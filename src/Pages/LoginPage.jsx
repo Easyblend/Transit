@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "react-bootstrap";
 import { useRef } from "react";
 import { Button } from "react-bootstrap";
@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 const Login = () => {
   const email = useRef(null);
   const password = useRef(null);
+  const [isVerified, setIsVerified] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,6 +31,7 @@ const Login = () => {
       .then((credential) => {
         console.log(credential);
         if (credential.user.emailVerified) {
+          setIsVerified(true);
           toast.update(id, {
             render: `Welcome ${credential.user.displayName}`,
             type: "success",
@@ -84,7 +86,7 @@ const Login = () => {
       </div>
       <div className="col-sm-5 my-auto mx-auto col-12 ">
         <Form
-          className="  mt-5 d-flex flex-column gap-4"
+          className="  mt-5 d-flex flex-column gap-4 mb-3"
           onSubmit={submitLogin}
         >
           <div>
@@ -115,12 +117,38 @@ const Login = () => {
             Log In
           </Button>
         </Form>
-        <Link
-          to="/register"
-          className="text-center mt-3 text-muted text-decoration-none"
-        >
-          Dont have an account? <span className="text-primary">Sign up</span>
-        </Link>
+        {isVerified || (
+          <p
+            onClick={() => {
+              const verifyToast = toast.loading("sending verification link..");
+              sendEmailVerification(auth.currentUser)
+                .then(() => {
+                  toast.update(verifyToast, {
+                    render: `Email verification sent!`,
+                    type: "success",
+                    isLoading: false,
+                    autoClose: true,
+                    closeButton: true,
+                    closeOnClick: true,
+                  });
+                })
+                .catch((error) =>
+                  toast.update(verifyToast, {
+                    render: error.code,
+                    type: "error",
+                    isLoading: false,
+                    autoClose: true,
+                    closeButton: true,
+                    closeOnClick: true,
+                  })
+                );
+            }}
+            className="text-end text-muted text-decoration-none"
+            role="button"
+          >
+            Verify Email
+          </p>
+        )}
       </div>
     </div>
   );
