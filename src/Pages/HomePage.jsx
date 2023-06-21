@@ -5,6 +5,7 @@ import { auth } from "../Confitg/DatabaseConfig";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
+import { toast } from "react-toastify";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -17,6 +18,11 @@ const HomePage = () => {
       if (user) {
         setName(user.displayName);
         setPhoto(user.photoURL);
+
+        if (!user.emailVerified) {
+          toast.warning("You need to verify your email");
+          return navigate("/login");
+        }
       } else {
         return navigate("/login");
       }

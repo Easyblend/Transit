@@ -4,7 +4,11 @@ import { useRef } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import { auth, db } from "../Confitg/DatabaseConfig";
 import { toast } from "react-toastify";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -33,14 +37,35 @@ const SignUp = () => {
         const user = userCredential.user;
 
         if (user) {
-          addDoc(collection(db, "Users"), {
-            name: name.current.value,
-            email: email.current.value,
-            phone: phone.current.value,
-            time: serverTimestamp(),
-          })
+          // Send email verification
+          sendEmailVerification(auth.currentUser)
+            .then(() => {
+              // Verification email sent successfully
+              toast.update(id, {
+                render: "Verification email sent. verify and login.",
+                type: "info",
+                isLoading: false,
+                autoClose: true,
+                closeOnClick: true,
+              });
+
+              return addDoc(collection(db, "Users"), {
+                name: name.current.value,
+                email: email.current.value,
+                phone: phone.current.value,
+                time: serverTimestamp(),
+              });
+            })
             .then((doc) => console.log("success", doc))
-            .catch((error) => console.log(error));
+            .catch((error) =>
+              toast.update(id, {
+                render: error.code,
+                type: "info",
+                isLoading: false,
+                autoClose: true,
+                closeOnClick: true,
+              })
+            );
         }
 
         return updateProfile(auth.currentUser, {
@@ -51,12 +76,6 @@ const SignUp = () => {
         });
       })
       .then(() => {
-        toast.update(id, {
-          render: "Success",
-          type: "success",
-          isLoading: false,
-          autoClose: true,
-        });
         navigate("/");
       })
       .catch((error) => {
@@ -66,6 +85,7 @@ const SignUp = () => {
           type: "error",
           isLoading: false,
           autoClose: true,
+          closeOnClick: true,
         });
       });
   };

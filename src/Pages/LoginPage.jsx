@@ -4,7 +4,10 @@ import { useRef } from "react";
 import { Button } from "react-bootstrap";
 
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../Confitg/DatabaseConfig";
 import { toast } from "react-toastify";
 
@@ -25,15 +28,32 @@ const Login = () => {
       password.current.value
     )
       .then((credential) => {
-        toast.update(id, {
-          render: `Welcome ${credential.user.displayName}`,
-          type: "success",
-          isLoading: false,
-          autoClose: true,
-        });
-        return navigate("/");
+        console.log(credential);
+        if (credential.user.emailVerified) {
+          toast.update(id, {
+            render: `Welcome ${credential.user.displayName}`,
+            type: "success",
+            isLoading: false,
+            autoClose: true,
+            closeOnClick: true,
+            closeButton: true,
+          });
+          return navigate("/");
+        } else {
+          sendEmailVerification(auth.currentUser).then(() => {
+            toast.update(id, {
+              render: `Email verification sent, verify and try again!}`,
+              type: "info",
+              isLoading: false,
+              autoClose: true,
+              closeButton: true,
+              closeOnClick: true,
+            });
+          });
+        }
       })
       .catch((error) => {
+        console.log(error);
         toast.update(id, {
           render: error.code,
           type: "error",
