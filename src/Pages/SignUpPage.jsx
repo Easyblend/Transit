@@ -41,13 +41,6 @@ const SignUp = () => {
           sendEmailVerification(auth.currentUser)
             .then(() => {
               // Verification email sent successfully
-              toast.update(id, {
-                render: "Verification email sent. verify and login.",
-                type: "info",
-                isLoading: false,
-                autoClose: true,
-                closeOnClick: true,
-              });
 
               return addDoc(collection(db, "Users"), {
                 name: name.current.value,
@@ -76,8 +69,19 @@ const SignUp = () => {
         });
       })
       .then(() => {
-        navigate("/");
+        if (auth.currentUser.emailVerified) {
+          navigate("/");
+        } else {
+          toast.update(id, {
+            render: "Verification email sent! verify and login.",
+            type: "success",
+            isLoading: false,
+            autoClose: true,
+            closeOnClick: true,
+          });
+        }
       })
+
       .catch((error) => {
         const errorCode = error.code;
         toast.update(id, {

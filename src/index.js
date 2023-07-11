@@ -24,7 +24,6 @@ root.render(
       draggable
       pauseOnHover
       theme="light"
-      toastContainerClassName="custom-toast-container"
     />
   </BrowserRouter>
 );
