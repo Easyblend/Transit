@@ -29,7 +29,6 @@ const Login = () => {
       password.current.value
     )
       .then((credential) => {
-        console.log(credential);
         if (credential.user.emailVerified) {
           setIsVerified(true);
           toast.update(id, {
@@ -44,7 +43,7 @@ const Login = () => {
         } else {
           sendEmailVerification(auth.currentUser).then(() => {
             toast.update(id, {
-              render: `Email verification sent, verify and try again!}`,
+              render: `Email verification sent, verify and try again!`,
               type: "info",
               isLoading: false,
               autoClose: true,
@@ -55,7 +54,6 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
         toast.update(id, {
           render: error.code,
           type: "error",
@@ -131,27 +129,39 @@ const Login = () => {
                 const verifyToast = toast.loading(
                   "sending verification link.."
                 );
-                sendEmailVerification(auth.currentUser)
-                  .then(() => {
-                    toast.update(verifyToast, {
-                      render: `Email verification sent!`,
-                      type: "success",
-                      isLoading: false,
-                      autoClose: true,
-                      closeButton: true,
-                      closeOnClick: true,
-                    });
-                  })
-                  .catch((error) =>
-                    toast.update(verifyToast, {
-                      render: error.code,
-                      type: "error",
-                      isLoading: false,
-                      autoClose: true,
-                      closeButton: true,
-                      closeOnClick: true,
+                if (auth.currentUser) {
+                  sendEmailVerification(auth.currentUser)
+                    .then(() => {
+                      toast.update(verifyToast, {
+                        render: `Email verification sent!`,
+                        type: "success",
+                        isLoading: false,
+                        autoClose: true,
+                        closeButton: true,
+                        closeOnClick: true,
+                      });
                     })
-                  );
+                    .catch((error) => {
+                      console.log(error);
+                      toast.update(verifyToast, {
+                        render: error.code,
+                        type: "error",
+                        isLoading: false,
+                        autoClose: true,
+                        closeButton: true,
+                        closeOnClick: true,
+                      });
+                    });
+                } else {
+                  toast.update(verifyToast, {
+                    render: `Try logging in First!`,
+                    type: "warning",
+                    isLoading: false,
+                    autoClose: true,
+                    closeButton: true,
+                    closeOnClick: true,
+                  });
+                }
               }}
               className="text-end text-muted text-decoration-none"
               role="button"

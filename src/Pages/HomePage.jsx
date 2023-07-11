@@ -18,9 +18,7 @@ const HomePage = () => {
       if (user) {
         setName(user.displayName);
         setPhoto(user.photoURL);
-
         if (!user.emailVerified) {
-          toast.warning("You need to verify your email");
           return navigate("/login");
         }
       } else {

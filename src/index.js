@@ -17,17 +17,15 @@ root.render(
       position="top-center"
       autoClose={5000}
       hideProgressBar={false}
-      newestOnTop={false}
+      newestOnTop={true}
       closeOnClick
       rtl={false}
-      limit={1}
       pauseOnFocusLoss
       draggable
       pauseOnHover
       theme="light"
+      toastContainerClassName="custom-toast-container"
     />
-    {/* Same as */}
-    <ToastContainer />
   </BrowserRouter>
 );
 
